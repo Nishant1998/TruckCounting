@@ -6,8 +6,8 @@ from pathlib import Path
 
 @dataclass
 class Config:
-    weights_path: Path = Path("weights.pt")
-    input_video: Path = Path("input.mp4")
+    weights_path: Path = Path("best.pt")
+    input_video: Path = Path("video.mp4")
     output_dir: Path = Path("outputs")
     output_video: Path = Path("outputs/annotated.mp4")
     events_csv: Path = Path("outputs/events.csv")

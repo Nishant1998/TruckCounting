@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 import time
-from pathlib import Path
 
 import cv2
-import numpy as np
 import torch
 from tqdm import tqdm
 
-from .config import DEFAULT_CONFIG, Config
-from .io_video import get_video_meta, make_writer, open_video
-from .motion import MotionCompensator
-from .render import draw_boxes, draw_overlay
-from .report import write_events_csv, write_events_json, write_per_second_counts, write_tracklets_csv
-from .tracking import TruckTracker
-from .tracklets import TrackletManager
+from src.config import DEFAULT_CONFIG, Config
+from src.io_video import get_video_meta, make_writer, open_video
+from src.motion import MotionCompensator
+from src.render import draw_boxes, draw_overlay
+from src.report import write_events_csv, write_events_json, write_per_second_counts, write_tracklets_csv
+from src.tracking import TruckTracker
+from src.tracklets import TrackletManager
 
 
 def _corridor_flag(center: tuple[float, float], width: int, height: int, config: Config) -> bool:

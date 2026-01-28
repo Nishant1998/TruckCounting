@@ -11,12 +11,12 @@ Lightweight pipeline to count haulage trucks moving **LEFT→RIGHT** vs **RIGHT�
 │   ├── classify.py
 │   ├── config.py
 │   ├── io_video.py
-│   ├── main.py
 │   ├── motion.py
 │   ├── render.py
 │   ├── report.py
 │   ├── tracking.py
 │   └── tracklets.py
+├── main.py
 └── tests/
     └── test_merge.py
 ```
@@ -30,12 +30,12 @@ pip install -r requirements.txt
 
 ## Quick Start (Smoke Test)
 ```bash
-python -m src.main
+python main.py
 ```
 
 By default, the pipeline expects:
-- `weights.pt` in the repo root
-- `input.mp4` in the repo root
+- `best.pt` in the repo root
+- `video.mp4` in the repo root
 
 It writes outputs to `outputs/`:
 - `annotated.mp4`
