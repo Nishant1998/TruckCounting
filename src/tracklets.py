@@ -82,6 +82,7 @@ class TrackletManager:
         merge_window_sec: float,
         merge_distance_px: float,
         merge_area_ratio_tol: float,
+        enable_tracklet_merging: bool,
         stationary_dx_thresh: float,
         approach_area_ratio: float,
         approach_dx_thresh: float,
@@ -93,6 +94,7 @@ class TrackletManager:
         self.merge_window_sec = merge_window_sec
         self.merge_distance_px = merge_distance_px
         self.merge_area_ratio_tol = merge_area_ratio_tol
+        self.enable_tracklet_merging = enable_tracklet_merging
         self.stationary_dx_thresh = stationary_dx_thresh
         self.approach_area_ratio = approach_area_ratio
         self.approach_dx_thresh = approach_dx_thresh
@@ -135,6 +137,8 @@ class TrackletManager:
         return tracklet
 
     def _find_merge_candidate(self, observation: FrameObservation) -> Optional[int]:
+        if not self.enable_tracklet_merging:
+            return None
         for ending in list(self.recent_endings):
             if should_merge_tracklets(
                 observation.time_sec,
@@ -207,6 +211,9 @@ class TrackletManager:
         record = self.vehicles[tracklet.vehicle_uid]
         if record.observations:
             end_obs = record.observations[-1]
+            if not self.enable_tracklet_merging:
+                self._finalize_vehicle(record)
+                return
             self.recent_endings.append(
                 RecentEnding(
                     vehicle_uid=record.vehicle_uid,

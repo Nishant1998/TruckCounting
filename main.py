@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 
 import cv2
+import numpy as np
 import torch
 from tqdm import tqdm
 
@@ -44,6 +45,7 @@ def run(config: Config = DEFAULT_CONFIG) -> None:
         merge_window_sec=config.merge_window_sec,
         merge_distance_px=config.merge_distance_px,
         merge_area_ratio_tol=config.merge_area_ratio_tol,
+        enable_tracklet_merging=config.enable_tracklet_merging,
         stationary_dx_thresh=config.stationary_dx_thresh,
         approach_area_ratio=config.approach_area_ratio,
         approach_dx_thresh=config.approach_dx_thresh,
@@ -60,8 +62,12 @@ def run(config: Config = DEFAULT_CONFIG) -> None:
             break
         time_sec = frame_idx / meta.fps
 
-        frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        motion_est = motion.update(frame_gray)
+        if config.enable_motion_compensation:
+            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            motion_est = motion.update(frame_gray)
+            motion_cumulative = motion_est.cumulative
+        else:
+            motion_cumulative = np.eye(3, dtype=np.float32)
 
         detections = tracker.track(frame)
         detection_rows: list[tuple[int, tuple[float, float, float, float], float]] = []
@@ -72,7 +78,7 @@ def run(config: Config = DEFAULT_CONFIG) -> None:
             x1, y1, x2, y2 = det.bbox
             area = max(1.0, (x2 - x1) * (y2 - y1))
             center = ((x1 + x2) / 2.0, (y1 + y2) / 2.0)
-            stable_center = motion.stabilize_point(center, motion_est.cumulative)
+            stable_center = motion.stabilize_point(center, motion_cumulative)
             detection_rows.append((det.tracker_id, det.bbox, area))
             stable_centers[det.tracker_id] = stable_center
             corridor_flags[det.tracker_id] = _corridor_flag(center, meta.width, meta.height, config)
